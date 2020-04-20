@@ -1,3 +1,6 @@
+var responseHeaders=new Headers({
+	"Content-Type":"text/javascript"
+});
 Game.Win("Third-party");
 Game.massBuild=function(inputMode,determined,BuyBothSell,amount,name,RigidelEven,RigidelDirection){
 	if(name!=undefined){
