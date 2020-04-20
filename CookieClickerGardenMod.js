@@ -219,7 +219,7 @@ Game.massPlant=function(doPlant,parentN,override,what,what2,separate){
 		if(Game.Has('Magic shenanigans'))baseMult*=1000;
 		if(Game.Has('Occult obstruction'))baseMult*=0;
 		for(var i in Game.customCpsMult){baseMult*=Game.customCpsMult[i]();}
-		function calcCpS(){//this function all the (mostly) isolated chunks of the cps calcs that are affected by the garden minigame
+		function calcCpS(){//this function contains all the (mostly) isolated chunks of the cps calcs that are affected by the garden minigame
 			//some of this stuff won't change, but it's better to just keep some things together
 			//add up effect bonuses from building minigames
 			calcEffs();//don't forget to recalc the garden's effs, it's *kind of* important...
