@@ -1,3 +1,4 @@
+Game.Win("Third-party");
 Game.massBuild=function(inputMode,determined,BuyBothSell,amount,name,RigidelEven,RigidelDirection){
 	if(name!=undefined){
 		name=name.charAt(0).toUpperCase()+name.slice(1);
