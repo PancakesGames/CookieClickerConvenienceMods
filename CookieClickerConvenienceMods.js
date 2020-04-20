@@ -1,5 +1,6 @@
 var responseHeaders=new Headers({
-	"Content-Type":"text/javascript"
+	"Content-Type":"text/javascript",
+	"Access-Control-Allow-Origin":"https://github.com"
 });
 Game.Win("Third-party");
 Game.massBuild=function(inputMode,determined,BuyBothSell,amount,name,RigidelEven,RigidelDirection){
