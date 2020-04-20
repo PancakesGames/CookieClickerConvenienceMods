@@ -1,3 +1,4 @@
+Game.Win("Third-party");
 Game.massPlant=function(doPlant,parentN,override,what,what2,separate){
 	var plotSize=Math.min(Game.Objects["Farm"].level,9)-1;
 	if(plotSize==-1||Game.Objects["Farm"].amount==0)return "Garden minigame is not available!";
