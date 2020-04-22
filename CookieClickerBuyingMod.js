@@ -23,6 +23,7 @@ Game.massBuild=function(inputMode,determined,BuyBothSell,amount,name,RigidelEven
 			}
 		}
 		else a[i]=0;
+		if((BuyBothSell=="buy"&&a[i]<0)||(BuyBothSell=="sell"&&a[i]>0))a[i]=0;
 		if(obj.amount<-a[i])a[i]=-obj.amount;//stops negative amounts of buildings
 		//if(a[i]>0&&BuyBothSell=="buy"||BuyBothSell=="both")price+=obj.getSumPrice(a[i]);
 		//else if(a[i]<0&&BuyBothSell=="sell"||BuyBothSell=="both")price-=obj.getReverseSumPrice(-a[i]);
@@ -38,26 +39,45 @@ Game.massBuild=function(inputMode,determined,BuyBothSell,amount,name,RigidelEven
 		var more=10-less;
 		//var mult=RigidelDirection=="more"?1:-1;
 		if(less!=0){
-			var obj=-1;
 			if(RigidelEven=="any"){
 				if(BuyBothSell=="buy"&&RigidelDirection=="less"&&buyTotal-less<0)RigidelDirection="more";//the impossible has been requested
 				else if(BuyBothSell=="sell"&&RigidelDirection=="more"&&buyTotal+more>0)RigidelDirection="less";//again
-			}
-			else obj=Game.Objects[RigidelEven].id;
-			function fixDifference(id){
-				var priceDiff=0;
-				
-				//won't work? return "no"
-				return priceDiff;
-			}
-			if(RigidelEven=="any")for(var i=0;i<(RigidelDirection=="more"?more:less);i++){//loop stuff to determine which one to get each time
-				priceArray=[];
-				for(var j in a){
-					priceArray.push(fixDifference(j));
+				function fixDifference(id){
+					var obj=Game.ObjectsById[id];
+					//won't work? return "no"
+					if((((BuyBothSell=="buy"&&RigidelDirection=="less")||(BuyBothSell=="sell"&&RigidelDirection=="more"))&&a[id]==0)||(RigidelDirection=="less"&&obj.amount+a[id]<=0)||(BuyBothSell=="both"&&inputMode=="base"&&obj.name==name&&((RigidelDirection=="more"&&a[id]<0)||(RigidelDirection=="less"&&a[id]>0))))return "no";
+					else if(RigidelDirection=="more"){
+						if((BuyBothSell=="buy"||BuyBothSell=="both")&&a[id]>=0)return obj.getSumPrice(a[id]+1)-obj.getSumPrice(a[id]);
+						else if((BuyBothSell=="sell"||BuyBothSell=="both")&&a[id]<0)return obj.getReverseSumPrice(-a[id]-1)-obj.getReverseSumPrice(-a[id]);
+					}
+					else if(RigidelDirection=="less"){
+						if((BuyBothSell=="buy"||BuyBothSell=="both")&&a[id]>0)return obj.getSumPrice(a[id])-obj.getSumPrice(a[id]-1);
+						else if((BuyBothSell=="sell"||BuyBothSell=="both")&&a[id]<=0)return obj.getReverseSumPrice(-a[id])-obj.getReverseSumPrice(-a[id]+1);
+					}
+					else return "some scenario wasn't accounted for...";
 				}
-				//add/remove the cheapest one that works
+				for(var i=0;i<(RigidelDirection=="more"?more:less);i++){//loop stuff to determine which one to get each time
+					var priceArray=[];
+					for(var j in a){
+						priceArray.push(fixDifference(j));
+					}
+					var smallest=-1;
+					for(var j in priceArray){
+						if(typeof priceArray[j]=="string")continue;
+						else if(smallest==-1)smallest=j;
+						else if(Math.abs(priceArray[j])<Math.abs(priceArray[smallest]))smallest=j;
+					}
+					/*
+					more:compare absolute values
+					less:compare absolute values?
+					*/
+					if(smallest==-1){console.log("F in the chat, please, for our fallen program.");break;}
+					else a[smallest]+=(RigidelDirection=="more"?1:-1);
+					//add/remove the cheapest one that works
+				}
 			}
 			else{
+				var obj=Game.Objects[RigidelEven].id;
 				if(RigidelDirection=="more")a[obj]+=more;
 				else if(RigidelDirection=="less")a[obj]-=less;
 				if(BuyBothSell=="buy"&&a[obj]<0)a[obj]+=10;
@@ -66,15 +86,15 @@ Game.massBuild=function(inputMode,determined,BuyBothSell,amount,name,RigidelEven
 		}
 	}
 	for(var i in Game.ObjectsById){
-		if(a[i]>0&&BuyBothSell=="buy"||BuyBothSell=="both")price+=Game.ObjectsById[i].getSumPrice(a[i]);
-		else if(a[i]<0&&BuyBothSell=="sell"||BuyBothSell=="both")price-=Game.ObjectsById[i].getReverseSumPrice(-a[i]);
+		if(a[i]>0&&(BuyBothSell=="buy"||BuyBothSell=="both"))price+=Game.ObjectsById[i].getSumPrice(a[i]);
+		else if(a[i]<0&&(BuyBothSell=="sell"||BuyBothSell=="both"))price-=Game.ObjectsById[i].getReverseSumPrice(-a[i]);
 	}
 	if(price>Game.cookies){
 		if(determined==0)return "You can't afford to buy all the buildings.";
 		else if(determined==1)console.log("You can't afford to buy all the buildings.");
 		else if(determined>=2){
 			if(determined==2)console.log("You can't afford to buy all the buildings right now. This program will buy as many of the buildings as it can every five seconds until the buildings have all been bought.");
-			setTimeout(Game.massBuild,5000,inputMode,3,BuyBothSell,amount,name);
+			setTimeout(Game.massBuild,5000,inputMode,3,BuyBothSell,amount,name,RigidelEven,RigidelDirection);
 		}
 	}
 	else if(determined==3)console.log("Your buildings have been bought.");
