@@ -101,7 +101,7 @@ Game.massBuild=function(inputMode,determined,BuyBothSell,amount,name,RigidelEven
 	for(var i in a){
 		if(a[i]<0&&(BuyBothSell=="sell"||BuyBothSell=="both"))Game.ObjectsById[i].sell(-a[i]);
 	}
-	for(var i=a.length-1;i>=0;i++){//getting the highest tier buildings first because they help pay for the lower tier ones
+	for(var i=a.length-1;i>=0;i--){//getting the highest tier buildings first because they help pay for the lower tier ones
 		if(a[i]>0&&(BuyBothSell=="buy"||BuyBothSell=="both"))Game.ObjectsById[i].buy(a[i]);
 	}
 }
